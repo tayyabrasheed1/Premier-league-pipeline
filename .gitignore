@@ -9,6 +9,7 @@ venv/
 # Environment
 .env
 .env.*
+!.env.example
 
 # IDE/editor
 .vscode/
@@ -23,3 +24,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
