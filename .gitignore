@@ -29,3 +29,7 @@ Thumbs.db
 dbt_project/target/
 dbt_project/dbt_packages/
 dbt_project/logs/
+dbt_project/.user.yml
+
+# Raw API downloads (re-creatable with ingest/fetch_matches.py)
+data/
