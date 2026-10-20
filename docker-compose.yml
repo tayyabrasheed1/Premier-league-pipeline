@@ -17,5 +17,30 @@ services:
       timeout: 5s
       retries: 5
 
+  airflow:
+    build: ./airflow
+    container_name: pl_airflow
+    command: standalone
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      FOOTBALL_DATA_API_KEY: ${FOOTBALL_DATA_API_KEY}
+      PL_SEASON: ${PL_SEASON:-2025}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./:/opt/airflow/project
+
 volumes:
   pgdata:
