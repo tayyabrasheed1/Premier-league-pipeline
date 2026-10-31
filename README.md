@@ -31,7 +31,7 @@ staging → core → marts
 
 ## Tech stack
 
-Python · PostgreSQL 16 (Docker) · dbt-postgres
+Python · PostgreSQL 16 (Docker) · dbt-postgres · Airflow · Pydantic · pytest · GitHub Actions · Streamlit
 
 ## Running it locally
 
@@ -101,3 +101,17 @@ Every push runs GitHub Actions (`.github/workflows/ci.yml`): a fresh Postgres, `
 docker compose exec postgres psql -U pl_user -d premier_league \
   -c "SELECT position, team_name, played, points FROM marts.league_table WHERE season = 2025 ORDER BY position;"
 ```
+
+## Dashboard
+
+A Streamlit app (`dashboard/app.py`) reads the mart tables and shows, for any loaded season:
+
+- the league table
+- a team view with form and the last 5 results
+- home vs away points per game
+- rolling 5-match goals for and against
+- how many matches have finished, and when the data last changed
+
+Start it locally with `streamlit run dashboard/app.py`, or as part of the full stack with `docker compose up -d`, then open http://localhost:8501.
+
+The dashboard currently connects with the same database user as the pipeline. In a real deployment it would use a separate read-only user, so a bug in the dashboard could never change data.
