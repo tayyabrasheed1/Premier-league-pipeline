@@ -80,6 +80,21 @@ The tests recreate the dedicated `premier_league_test` database for each test. E
 
 **Proving the tests work:** I temporarily removed the `WHERE raw.matches.raw_json IS DISTINCT FROM EXCLUDED.raw_json` check from the match upsert. Two tests failed: loading the same file twice reported 3 rows changed instead of 0, and correcting one match's score rewrote all 3 rows instead of 1. Restoring the check made all 3 tests pass again.
 
+## Data quality and CI
+
+Bad data is stopped at two points:
+
+- **Before loading:** every match in a raw file is validated against a Pydantic model (`ingest/validate.py`). If the API renames a field or changes a type, the bad records are copied to `data/quarantine/`, the load stops, and nothing from that file is written.
+- **After dbt runs:** dbt tests check uniqueness, nulls, allowed match statuses, that every match points to a known team, and custom rules (no negative scores, finished matches have scores, 38 matches per team in a complete season).
+
+To prove the dbt tests catch bad data, I set one match's score to -1 in the raw table and ran `dbt build`:
+
+![dbt test catching a negative score](docs/images/dbt-test-failure.png)
+
+Every push runs GitHub Actions (`.github/workflows/ci.yml`): a fresh Postgres, `pytest`, then `dbt build` on a small seed dataset (`sql/ci_seed.sql`). To prove CI fails when it should, I pushed a branch that removed `FINISHED` from the allowed statuses, and the run went red at `dbt build`:
+
+![CI failing on a broken dbt test](docs/images/ci-failure.png)
+
 ## Querying the results
 
 ```bash
