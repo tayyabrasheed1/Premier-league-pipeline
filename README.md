@@ -112,6 +112,14 @@ A Streamlit app (`dashboard/app.py`) reads the mart tables and shows, for any lo
 - rolling 5-match goals for and against
 - how many matches have finished, and when the data last changed
 
+![Changing season and team on the dashboard](docs/images/dashboard-demo.gif)
+
+![Full dashboard for the 2025/26 season](docs/images/dashboard-full.png)
+
+| Team view | Home vs away and rolling goals |
+|---|---|
+| ![Team view with form and last 5 results](docs/images/dashboard-team-view.png) | ![Home vs away and rolling goals charts](docs/images/dashboard-charts.png) |
+
 Start it locally with `streamlit run dashboard/app.py`, or as part of the full stack with `docker compose up -d`, then open http://localhost:8501.
 
 The dashboard currently connects with the same database user as the pipeline. In a real deployment it would use a separate read-only user, so a bug in the dashboard could never change data.
