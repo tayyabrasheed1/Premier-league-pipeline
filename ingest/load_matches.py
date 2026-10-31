@@ -7,6 +7,8 @@ import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import Json
 
+from ingest.validate import validate_matches
+
 load_dotenv()
 
 RAW_DIR = Path("data/raw")
@@ -103,10 +105,12 @@ def parse_team(t):
     }
 
 
-def load_file(conn, path, key, sql, parser):
+def load_file(conn, path, key, sql, parser, validator=None):
     """Upsert every record in a raw file. Return (total, changed)."""
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
+    if validator:
+        validator(data[key], path)  # raises SchemaError before anything is written
     changed = 0
     with conn.cursor() as cur:
         for record in data[key]:
@@ -123,7 +127,9 @@ def load_season(conn, season):
     print(f"teams:   {total} in file, {changed} inserted or updated ({path.name})")
 
     path = latest_file("matches", season)
-    total, changed = load_file(conn, path, "matches", UPSERT_MATCH, parse_match)
+    total, changed = load_file(
+        conn, path, "matches", UPSERT_MATCH, parse_match, validator=validate_matches
+    )
     print(f"matches: {total} in file, {changed} inserted or updated ({path.name})")
 
 

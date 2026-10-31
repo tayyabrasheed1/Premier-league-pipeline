@@ -38,12 +38,12 @@ with DAG(
 
     fetch_matches = BashOperator(
         task_id="fetch_matches",
-        bash_command=f"cd {PROJECT} && python ingest/fetch_matches.py --season {SEASON}",
+        bash_command=f"cd {PROJECT} && python -m ingest.fetch_matches --season {SEASON}",
     )
 
     load_to_postgres = BashOperator(
         task_id="load_to_postgres",
-        bash_command=f"cd {PROJECT} && python ingest/load_matches.py --season {SEASON}",
+        bash_command=f"cd {PROJECT} && python -m ingest.load_matches --season {SEASON}",
     )
 
     dbt_run = BashOperator(

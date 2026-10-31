@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pl_user
+          POSTGRES_PASSWORD: pl_password
+          POSTGRES_DB: premier_league
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pl_user -d premier_league"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: pl_user
+      POSTGRES_PASSWORD: pl_password
+      POSTGRES_DB: premier_league
+      PGPASSWORD: pl_password
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"   # matches the local venv that produced requirements.txt
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Python tests
+        run: pytest -v
+
+      - name: Create raw tables and load seed data
+        run: |
+          psql -h localhost -U pl_user -d premier_league -f sql/001_create_raw_tables.sql
+          psql -h localhost -U pl_user -d premier_league -f sql/ci_seed.sql
+
+      - name: dbt build (models and tests)
+        working-directory: dbt_project
+        run: dbt build --profiles-dir .

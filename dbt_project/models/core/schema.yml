@@ -4,8 +4,33 @@ models:
   - name: fact_matches
     columns:
       - name: match_id
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
+      - name: status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [SCHEDULED, TIMED, IN_PLAY, PAUSED, FINISHED, POSTPONED, SUSPENDED, CANCELLED, AWARDED]
+      - name: home_team_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_teams')
+              field: team_id
+      - name: away_team_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_teams')
+              field: team_id
+
   - name: dim_teams
     columns:
       - name: team_id
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
+
+  - name: fact_team_matches
+    columns:
+      - name: result
+        data_tests:
+          - accepted_values:
+              values: [W, D, L]

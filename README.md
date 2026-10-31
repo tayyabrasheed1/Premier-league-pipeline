@@ -1,5 +1,7 @@
 # Premier League Pipeline
 
+![CI](https://github.com/tayyabrasheed1/Premier-league-pipeline/actions/workflows/ci.yml/badge.svg)
+
 An end-to-end data pipeline for Premier League results. Match and team data is pulled from the [football-data.org](https://www.football-data.org/) API, loaded into Postgres, and modelled with dbt into tables that power a league table, team form and home/away analysis.
 
 ## Architecture
@@ -49,8 +51,8 @@ venv\Scripts\activate          # Windows; use source venv/bin/activate elsewhere
 pip install -r requirements.txt
 
 # 4. Ingest a season
-python ingest/fetch_matches.py --season 2025
-python ingest/load_matches.py --season 2025
+python -m ingest.fetch_matches --season 2025
+python -m ingest.load_matches --season 2025
 
 # 5. Build and test the models
 cd dbt_project
