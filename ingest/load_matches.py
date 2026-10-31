@@ -116,6 +116,17 @@ def load_file(conn, path, key, sql, parser):
     return len(data[key]), changed
 
 
+def load_season(conn, season):
+    """Load the newest raw teams and matches files for one season."""
+    path = latest_file("teams", season)
+    total, changed = load_file(conn, path, "teams", UPSERT_TEAM, parse_team)
+    print(f"teams:   {total} in file, {changed} inserted or updated ({path.name})")
+
+    path = latest_file("matches", season)
+    total, changed = load_file(conn, path, "matches", UPSERT_MATCH, parse_match)
+    print(f"matches: {total} in file, {changed} inserted or updated ({path.name})")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--season", type=int, required=True)
@@ -123,13 +134,7 @@ def main():
 
     conn = get_connection()
     try:
-        path = latest_file("teams", args.season)
-        total, changed = load_file(conn, path, "teams", UPSERT_TEAM, parse_team)
-        print(f"teams:   {total} in file, {changed} inserted or updated ({path.name})")
-
-        path = latest_file("matches", args.season)
-        total, changed = load_file(conn, path, "matches", UPSERT_MATCH, parse_match)
-        print(f"matches: {total} in file, {changed} inserted or updated ({path.name})")
+        load_season(conn, args.season)
     finally:
         conn.close()
 

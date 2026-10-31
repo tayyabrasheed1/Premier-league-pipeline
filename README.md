@@ -58,6 +58,24 @@ dbt run --profiles-dir .
 dbt test --profiles-dir .
 ```
 
+## Backfilling historical seasons
+
+Fetch and load multiple seasons with the same functions used by the daily pipeline:
+
+```bash
+python -m ingest.backfill --from-season 2023 --to-season 2025
+```
+
+The range is inclusive. Seasons the API refuses with an HTTP error are reported and skipped; other failures stop the command. The existing single-season fetch/load commands and Airflow DAG remain unchanged.
+
+To test that loading is idempotent, start Postgres and run:
+
+```bash
+pytest -v
+```
+
+The tests recreate the dedicated `premier_league_test` database for each test. Ensure `POSTGRES_DB` is set to your regular database, not `premier_league_test`; the fixture refuses to run if they match.
+
 ## Querying the results
 
 ```bash

@@ -43,19 +43,23 @@ def save_raw(data, name, season):
     return path
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--season", type=int, required=True, help="Start year, e.g. 2025")
-    args = parser.parse_args()
-
+def fetch_season(season):
+    """Fetch and save raw matches and teams for one season."""
     if not API_KEY:
         raise SystemExit("FOOTBALL_DATA_API_KEY is missing. Check your .env file.")
 
     for name in ["matches", "teams"]:
-        data = fetch(f"competitions/PL/{name}", params={"season": args.season})
-        path = save_raw(data, name, args.season)
+        data = fetch(f"competitions/PL/{name}", params={"season": season})
+        path = save_raw(data, name, season)
         print(f"Saved {name} to {path}")
         time.sleep(7)  # stay under the free tier rate limit
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--season", type=int, required=True, help="Start year, e.g. 2025")
+    args = parser.parse_args()
+    fetch_season(args.season)
 
 
 if __name__ == "__main__":
