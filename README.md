@@ -76,6 +76,8 @@ pytest -v
 
 The tests recreate the dedicated `premier_league_test` database for each test. Ensure `POSTGRES_DB` is set to your regular database, not `premier_league_test`; the fixture refuses to run if they match.
 
+**Proving the tests work:** I temporarily removed the `WHERE raw.matches.raw_json IS DISTINCT FROM EXCLUDED.raw_json` check from the match upsert. Two tests failed: loading the same file twice reported 3 rows changed instead of 0, and correcting one match's score rewrote all 3 rows instead of 1. Restoring the check made all 3 tests pass again.
+
 ## Querying the results
 
 ```bash
