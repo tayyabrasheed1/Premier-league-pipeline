@@ -4,5 +4,6 @@ select
     short_name,
     tla,
     founded,
-    venue
+    venue,
+    raw_json ->> 'crest' as crest_url
 from {{ source('raw', 'teams') }}

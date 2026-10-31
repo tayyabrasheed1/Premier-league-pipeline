@@ -9,12 +9,12 @@ select
     f.goals_for,
     f.goals_against,
     round(avg(f.goals_for) over (
-        partition by f.team_id
+        partition by f.team_id, f.season
         order by f.kickoff_at
         rows between 4 preceding and current row
     ), 2) as goals_for_rolling_5,
     round(avg(f.goals_against) over (
-        partition by f.team_id
+        partition by f.team_id, f.season
         order by f.kickoff_at
         rows between 4 preceding and current row
     ), 2) as goals_against_rolling_5
