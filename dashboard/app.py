@@ -80,12 +80,15 @@ def badge(result, tooltip="", big=False):
 st.title("Premier League Data Pipeline")
 
 # ---------- Sidebar: season ----------
-seasons = query("select distinct season from marts.league_table order by season desc")[
-    "season"
-].tolist()
+try:
+    seasons = query(
+        "select distinct season from marts.league_table order by season desc"
+    )["season"].tolist()
+except Exception:
+    seasons = []  # the marts don't exist until the DAG has run once
 
 if not seasons:
-    st.warning("No data yet. Run the pipeline and `dbt run` first.")
+    st.warning("No data yet. Trigger the premier_league_daily DAG in Airflow first.")
     st.stop()
 
 season = int(st.sidebar.selectbox("Season", seasons, format_func=season_label))
