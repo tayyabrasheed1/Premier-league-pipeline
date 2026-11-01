@@ -9,19 +9,22 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [SCHEDULED, TIMED, IN_PLAY, PAUSED, FINISHED, POSTPONED, SUSPENDED, CANCELLED, AWARDED]
+              arguments:
+                values: [SCHEDULED, TIMED, IN_PLAY, PAUSED, FINISHED, POSTPONED, SUSPENDED, CANCELLED, AWARDED]
       - name: home_team_id
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_teams')
-              field: team_id
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
       - name: away_team_id
         data_tests:
           - not_null
           - relationships:
-              to: ref('dim_teams')
-              field: team_id
+              arguments:
+                to: ref('dim_teams')
+                field: team_id
 
   - name: dim_teams
     columns:
@@ -33,4 +36,5 @@ models:
       - name: result
         data_tests:
           - accepted_values:
-              values: [W, D, L]
+              arguments:
+                values: [W, D, L]
